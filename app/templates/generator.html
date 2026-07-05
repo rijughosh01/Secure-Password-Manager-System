@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% from "macros/icons.html" import sparkles, copy, plus %}
+{% block title %}Password Generator — SecureVault{% endblock %}
+{% block content %}
+
+<div class="container--medium" style="margin-inline:auto;padding-block:0">
+  <header class="page-header" style="margin-bottom:var(--space-6)">
+    <div>
+      <h1 class="page-header__title">Password Generator</h1>
+      <p class="page-header__subtitle">Create strong, random passwords from a cryptographically secure source.</p>
+    </div>
+  </header>
+
+  <div class="card">
+    <form method="post" novalidate id="generator-form">
+      {{ form.hidden_tag() }}
+
+      <div class="range-group">
+        <div class="range-header">
+          <label class="form-label" for="length-range" style="margin:0">Password Length</label>
+          <span class="range-value" id="length-value">{{ form.length.data or 16 }}</span>
+        </div>
+        <input
+          type="range"
+          id="length-range"
+          class="form-range"
+          min="8"
+          max="128"
+          value="{{ form.length.data or 16 }}"
+          aria-label="Password length"
+        >
+        <input type="hidden" name="length" id="length-hidden" value="{{ form.length.data or 16 }}">
+        {% for error in form.length.errors %}
+        <div class="field-error">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <p class="form-label">Character Sets</p>
+      <div class="checkbox-grid">
+        <label class="checkbox-card">
+          {{ form.use_lowercase() }}
+          {{ form.use_lowercase.label.text }}
+        </label>
+        <label class="checkbox-card">
+          {{ form.use_uppercase() }}
+          {{ form.use_uppercase.label.text }}
+        </label>
+        <label class="checkbox-card">
+          {{ form.use_digits() }}
+          {{ form.use_digits.label.text }}
+        </label>
+        <label class="checkbox-card">
+          {{ form.use_symbols() }}
+          {{ form.use_symbols.label.text }}
+        </label>
+      </div>
+
+      {{ form.submit(class="btn btn--primary btn--lg btn--block") }}
+    </form>
+
+    {% if generated %}
+    <div class="generated-result">
+      <div class="generated-result__header">
+        <span class="generated-result__label">Generated Password</span>
+        <button type="button" class="btn btn--secondary btn--sm" data-copy="#generated-password">
+          {{ copy() }} Copy
+        </button>
+      </div>
+      <div class="secret-display">
+        <span class="secret-display__value" id="generated-password">{{ generated }}</span>
+      </div>
+      <div class="strength-bar" aria-hidden="true">
+        <div class="strength-bar__fill" id="strength-fill"></div>
+      </div>
+      <p class="strength-label" id="strength-label"></p>
+      <p class="meta-text" style="margin-top:var(--space-4)">
+        This password is not stored until you save it in a credential entry.
+      </p>
+      <div class="form-actions" style="margin-top:var(--space-5)">
+        <a href="{{ url_for('vault.add_entry') }}" class="btn btn--primary">{{ plus() }} Add New Credential</a>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

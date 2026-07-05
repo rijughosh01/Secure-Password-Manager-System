@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% from "macros/icons.html" import copy, eye, edit %}
+{% block title %}Reveal — {{ entry.service_name }}{% endblock %}
+{% block content %}
+
+<div class="container--medium" style="margin-inline:auto;padding-block:0">
+  <header class="page-header" style="margin-bottom:var(--space-6)">
+    <div style="display:flex;align-items:center;gap:var(--space-4)">
+      <div class="credential-item__avatar" style="width:52px;height:52px;font-size:1.25rem">
+        {{ entry.service_name[0] }}
+      </div>
+      <div>
+        <h1 class="page-header__title" style="font-size:1.5rem">{{ entry.service_name }}</h1>
+        <p class="page-header__subtitle">Decrypted credential details</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="card">
+    <div class="secret-field">
+      <div class="secret-field__label">
+        <span>Username / Email</span>
+      </div>
+      <div class="secret-display">
+        <span class="secret-display__value" id="username-value">{{ entry.username or '—' }}</span>
+        {% if entry.username %}
+        <div class="secret-display__actions">
+          <button type="button" class="btn btn--ghost btn--icon" data-copy="#username-value" title="Copy username" aria-label="Copy username">
+            {{ copy() }}
+          </button>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="secret-field">
+      <div class="secret-field__label">
+        <span>Password</span>
+      </div>
+      <div class="secret-display">
+        <span class="secret-display__value secret-display__value--masked" id="password-value" data-plain="{{ password }}">••••••••••••••••</span>
+        <div class="secret-display__actions">
+          <button type="button" class="btn btn--ghost btn--icon" data-toggle-secret="#password-value" title="Show/hide password" aria-label="Toggle password visibility" aria-pressed="false">
+            {{ eye() }}
+          </button>
+          <button type="button" class="btn btn--ghost btn--icon" data-copy="#password-value" title="Copy password" aria-label="Copy password">
+            {{ copy() }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    {% if notes %}
+    <div class="secret-field">
+      <div class="secret-field__label">
+        <span>Notes</span>
+      </div>
+      <div class="secret-display">
+        <span class="secret-display__value" id="notes-value" style="white-space:pre-wrap">{{ notes }}</span>
+        <div class="secret-display__actions">
+          <button type="button" class="btn btn--ghost btn--icon" data-copy="#notes-value" title="Copy notes" aria-label="Copy notes">
+            {{ copy() }}
+          </button>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <p class="meta-text">Last updated {{ entry.updated_at.strftime('%B %d, %Y at %H:%M UTC') }}</p>
+
+    <div class="divider"></div>
+
+    <div class="form-actions">
+      <a href="{{ url_for('vault.edit_entry', entry_id=entry.id) }}" class="btn btn--primary">
+        {{ edit() }} Edit Credential
+      </a>
+      <a href="{{ url_for('vault.dashboard') }}" class="btn btn--secondary">Back to Vault</a>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

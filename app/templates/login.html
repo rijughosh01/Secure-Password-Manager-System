@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% from "macros/icons.html" import shield, lock, key, check %}
+{% block title %}Sign In — SecureVault{% endblock %}
+{% block auth_layout %}
+<div class="auth-layout">
+  <aside class="auth-panel auth-panel--brand" aria-hidden="true">
+    <div class="auth-brand-content">
+      <a href="{{ url_for('auth.login') }}" class="brand">
+        <span class="brand__icon">{{ shield() }}</span>
+        <span class="brand__text"><span>Secure</span>Vault</span>
+      </a>
+      <h1 class="auth-headline">Your passwords,<br>encrypted &amp; secure.</h1>
+      <p class="auth-description">
+        Military-grade encryption keeps your credentials safe. Access them anytime through a simple, secure web interface.
+      </p>
+      <ul class="auth-features">
+        <li>
+          <span class="auth-features__icon">{{ lock() }}</span>
+          <span>AES encryption with PBKDF2 key derivation</span>
+        </li>
+        <li>
+          <span class="auth-features__icon">{{ key() }}</span>
+          <span>bcrypt-hashed master password authentication</span>
+        </li>
+        <li>
+          <span class="auth-features__icon">{{ check() }}</span>
+          <span>Built-in strong password generator</span>
+        </li>
+      </ul>
+    </div>
+  </aside>
+
+  <main class="auth-panel auth-panel--form">
+    <div class="auth-form-wrapper">
+      {% include "partials/flash.html" %}
+
+      <div class="card card--flat">
+        <header class="card__header">
+          <h1 class="card__title">Welcome back</h1>
+          <p class="card__subtitle">Sign in with your master password to unlock your vault.</p>
+        </header>
+
+        <form method="post" novalidate>
+          {{ form.hidden_tag() }}
+
+          <div class="form-group">
+            {{ form.username.label(class="form-label") }}
+            {{ form.username(class="form-input", placeholder="Enter your username") }}
+            {% for error in form.username.errors %}
+            <div class="field-error">{{ error }}</div>
+            {% endfor %}
+          </div>
+
+          <div class="form-group">
+            {{ form.password.label(class="form-label") }}
+            {{ form.password(class="form-input", placeholder="Enter your master password") }}
+            {% for error in form.password.errors %}
+            <div class="field-error">{{ error }}</div>
+            {% endfor %}
+          </div>
+
+          {{ form.submit(class="btn btn--primary btn--lg btn--block") }}
+        </form>
+
+        <p class="auth-footer">
+          Don't have an account? <a href="{{ url_for('auth.register') }}">Create one</a>
+        </p>
+      </div>
+    </div>
+  </main>
+</div>
+{% endblock %}

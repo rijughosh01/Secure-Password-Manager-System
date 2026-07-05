@@ -1,0 +1,48 @@
+{% from "macros/icons.html" import shield, vault, key, logout, sparkles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SecureVault — encrypted password manager">
+  <title>{% block title %}SecureVault{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="{% block body_class %}{% endblock %}">
+  {% if current_user.is_authenticated %}
+  <div class="app-shell">
+    <nav class="navbar" aria-label="Main navigation">
+      <div class="navbar__inner">
+        <a href="{{ url_for('vault.dashboard') }}" class="brand">
+          <span class="brand__icon">{{ shield() }}</span>
+          <span class="brand__text"><span>Secure</span>Vault</span>
+        </a>
+        <div class="nav-links">
+          <a href="{{ url_for('vault.dashboard') }}"
+             class="nav-link {% if request.endpoint == 'vault.dashboard' %}nav-link--active{% endif %}">
+            {{ vault() }}<span>Vault</span>
+          </a>
+          <a href="{{ url_for('vault.password_generator') }}"
+             class="nav-link {% if request.endpoint == 'vault.password_generator' %}nav-link--active{% endif %}">
+            {{ sparkles() }}<span>Generator</span>
+          </a>
+          <a href="{{ url_for('auth.logout') }}" class="nav-link nav-link--logout">
+            {{ logout() }}<span>Sign Out</span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="container">
+      {% include "partials/flash.html" %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+  {% else %}
+  {% block auth_layout %}{% endblock %}
+  {% endif %}
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+</body>
+</html>

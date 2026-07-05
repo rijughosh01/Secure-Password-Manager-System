@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% from "macros/icons.html" import vault, plus, search, eye, edit, trash %}
+{% block title %}Vault — SecureVault{% endblock %}
+{% block content %}
+
+<header class="page-header">
+  <div>
+    <h1 class="page-header__title">Password Vault</h1>
+    <p class="page-header__subtitle">All credentials are encrypted at rest with your master key.</p>
+  </div>
+  <a href="{{ url_for('vault.add_entry') }}" class="btn btn--primary">
+    {{ plus() }} Add Credential
+  </a>
+</header>
+
+<div class="stats-row">
+  <div class="stat-card">
+    <div class="stat-card__icon">{{ vault() }}</div>
+    <div>
+      <p class="stat-card__label">Total Credentials</p>
+      <p class="stat-card__value">{{ entries|length }}</p>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+    </div>
+    <div>
+      <p class="stat-card__label">Encryption</p>
+      <p class="stat-card__value" style="font-size:1rem">AES-128 + HMAC</p>
+    </div>
+  </div>
+</div>
+
+<form class="search-bar" method="get" action="{{ url_for('vault.dashboard') }}" role="search">
+  <div class="search-bar__input-wrap">
+    <span class="search-bar__icon">{{ search() }}</span>
+    <input
+      class="search-bar__input"
+      type="search"
+      name="q"
+      value="{{ search }}"
+      placeholder="Search by service or username…"
+      maxlength="120"
+      aria-label="Search credentials"
+    >
+  </div>
+  <button type="submit" class="btn btn--secondary">Search</button>
+  {% if search %}
+  <a href="{{ url_for('vault.dashboard') }}" class="btn btn--secondary">Clear</a>
+  {% endif %}
+</form>
+
+{% if entries %}
+<ul class="credential-list" role="list">
+  {% for entry in entries %}
+  <li class="credential-item">
+    <div class="credential-item__avatar" aria-hidden="true">
+      {{ entry.service_name[0] }}
+    </div>
+    <div class="credential-item__body">
+      <p class="credential-item__service">{{ entry.service_name }}</p>
+      <p class="credential-item__username">{{ entry.username or 'No username set' }}</p>
+      <p class="credential-item__meta">Updated {{ entry.updated_at.strftime('%b %d, %Y · %H:%M') }}</p>
+    </div>
+    <div class="credential-item__actions">
+      <a href="{{ url_for('vault.reveal_password', entry_id=entry.id) }}"
+         class="btn btn--secondary btn--sm" title="Reveal password">
+        {{ eye() }} Reveal
+      </a>
+      <a href="{{ url_for('vault.edit_entry', entry_id=entry.id) }}"
+         class="btn btn--ghost btn--sm" title="Edit credential">
+        {{ edit() }}
+      </a>
+      <form class="inline-form" method="post" action="{{ url_for('vault.delete_entry', entry_id=entry.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn btn--ghost btn--sm" title="Delete credential"
+                onclick="return confirm('Delete this credential permanently?')">
+          {{ trash() }}
+        </button>
+      </form>
+    </div>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<div class="empty-state">
+  <div class="empty-state__icon">{{ vault() }}</div>
+  {% if search %}
+  <h2 class="empty-state__title">No results found</h2>
+  <p class="empty-state__text">No credentials match "{{ search }}". Try a different search term.</p>
+  <a href="{{ url_for('vault.dashboard') }}" class="btn btn--secondary">Clear Search</a>
+  {% else %}
+  <h2 class="empty-state__title">Your vault is empty</h2>
+  <p class="empty-state__text">Add your first credential to start storing passwords securely.</p>
+  <a href="{{ url_for('vault.add_entry') }}" class="btn btn--primary">{{ plus() }} Add Credential</a>
+  {% endif %}
+</div>
+{% endif %}
+
+{% endblock %}

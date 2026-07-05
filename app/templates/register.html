@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% from "macros/icons.html" import shield, lock, key, check, info %}
+{% block title %}Register — SecureVault{% endblock %}
+{% block auth_layout %}
+<div class="auth-layout">
+  <aside class="auth-panel auth-panel--brand" aria-hidden="true">
+    <div class="auth-brand-content">
+      <a href="{{ url_for('auth.login') }}" class="brand">
+        <span class="brand__icon">{{ shield() }}</span>
+        <span class="brand__text"><span>Secure</span>Vault</span>
+      </a>
+      <h1 class="auth-headline">Start protecting<br>your credentials.</h1>
+      <p class="auth-description">
+        Create a master password to encrypt your entire vault. Only you hold the key — we never store it in plain text.
+      </p>
+      <ul class="auth-features">
+        <li>
+          <span class="auth-features__icon">{{ lock() }}</span>
+          <span>End-to-end encryption for every stored password</span>
+        </li>
+        <li>
+          <span class="auth-features__icon">{{ key() }}</span>
+          <span>Your master password derives the encryption key</span>
+        </li>
+        <li>
+          <span class="auth-features__icon">{{ check() }}</span>
+          <span>Zero plain-text storage in the database</span>
+        </li>
+      </ul>
+    </div>
+  </aside>
+
+  <main class="auth-panel auth-panel--form">
+    <div class="auth-form-wrapper">
+      {% include "partials/flash.html" %}
+
+      <div class="card card--flat">
+        <header class="card__header">
+          <h1 class="card__title">Create account</h1>
+          <p class="card__subtitle">Choose a strong master password — you'll need it every time you sign in.</p>
+        </header>
+
+        <form method="post" novalidate>
+          {{ form.hidden_tag() }}
+
+          <div class="form-group">
+            {{ form.username.label(class="form-label") }}
+            {{ form.username(class="form-input", placeholder="Choose a username") }}
+            {% for error in form.username.errors %}
+            <div class="field-error">{{ error }}</div>
+            {% endfor %}
+          </div>
+
+          <div class="form-group">
+            {{ form.password.label(class="form-label") }}
+            {{ form.password(class="form-input", placeholder="Min. 8 characters") }}
+            {% for error in form.password.errors %}
+            <div class="field-error">{{ error }}</div>
+            {% endfor %}
+          </div>
+
+          <div class="form-group">
+            {{ form.confirm_password.label(class="form-label") }}
+            {{ form.confirm_password(class="form-input", placeholder="Re-enter your master password") }}
+            {% for error in form.confirm_password.errors %}
+            <div class="field-error">{{ error }}</div>
+            {% endfor %}
+          </div>
+
+          {{ form.submit(class="btn btn--primary btn--lg btn--block") }}
+        </form>
+
+        <div class="security-note">
+          <span class="security-note__icon">{{ info() }}</span>
+          <span>
+            <strong>Important:</strong> Your master password is hashed with bcrypt for login and used to derive an encryption key (PBKDF2 + Fernet). If you forget it, your data cannot be recovered.
+          </span>
+        </div>
+
+        <p class="auth-footer">
+          Already have an account? <a href="{{ url_for('auth.login') }}">Sign in</a>
+        </p>
+      </div>
+    </div>
+  </main>
+</div>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% from "macros/icons.html" import sparkles %}
+{% block title %}{{ title }} — SecureVault{% endblock %}
+{% block content %}
+
+<div class="container--medium" style="margin-inline:auto;padding-block:0">
+  <header class="page-header" style="margin-bottom:var(--space-6)">
+    <div>
+      <h1 class="page-header__title">{{ title }}</h1>
+      <p class="page-header__subtitle">Passwords are encrypted with Fernet before being saved to the database.</p>
+    </div>
+  </header>
+
+  <div class="card">
+    <form method="post" novalidate>
+      {{ form.hidden_tag() }}
+
+      <div class="form-group">
+        {{ form.service_name.label(class="form-label") }}
+        {{ form.service_name(class="form-input", placeholder="e.g. Gmail, GitHub, Netflix") }}
+        {% for error in form.service_name.errors %}
+        <div class="field-error">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ form.username.label(class="form-label") }}
+        {{ form.username(class="form-input", placeholder="Email or username for this service") }}
+        {% for error in form.username.errors %}
+        <div class="field-error">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ form.password.label(class="form-label") }}
+        {{ form.password(class="form-input form-input--mono", placeholder="Enter or paste a password") }}
+        {% for error in form.password.errors %}
+        <div class="field-error">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ form.notes.label(class="form-label") }}
+        {{ form.notes(class="form-textarea", placeholder="Optional notes (security questions, recovery codes, etc.)") }}
+        {% for error in form.notes.errors %}
+        <div class="field-error">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="form-actions">
+        {{ form.submit(class="btn btn--primary") }}
+        <a href="{{ url_for('vault.dashboard') }}" class="btn btn--secondary">Cancel</a>
+        <a href="{{ url_for('vault.password_generator') }}" class="btn btn--secondary">
+          {{ sparkles() }} Generate Password
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
